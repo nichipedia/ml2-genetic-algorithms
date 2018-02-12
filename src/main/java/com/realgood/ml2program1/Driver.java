@@ -1,5 +1,7 @@
 package com.realgood.ml2program1;
 
+import com.realgood.ml2program1.models.ProteinSequence;
+import com.realgood.ml2program1.parser.ProteinSequenceParser;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -12,7 +14,15 @@ public class Driver {
     private static final int max = 100;
 
     public static void main(String[] args) {
-        hillClimb();
+        test();
+    }
+
+    private static void test() {
+        ProteinSequenceParser repo = new ProteinSequenceParser("/Users/NicholasMoran/Downloads/input.txt");
+        for (ProteinSequence sequence:repo.getProteinSequences()) {
+            System.out.println("Acid: " + sequence.toString());
+            System.out.println("Fitness: " + sequence.getFitness());
+        }
     }
 
     private static void hillClimb() {
