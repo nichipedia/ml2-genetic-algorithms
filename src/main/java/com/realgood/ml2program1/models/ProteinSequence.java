@@ -1,7 +1,5 @@
 package com.realgood.ml2program1.models;
 
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-
 import java.util.HashMap;
 
 /**
@@ -22,7 +20,7 @@ public class ProteinSequence {
             } else if (aminoAcids.charAt(i) == 'p') {
                 map.put(i, new PolarAcid());
             } else {
-                System.out.println("Error somewhere Idk");
+                System.out.println("Error somewhere while creating protein sequence Idk");
             }
         }
         this.aminoAcids = aminoAcids;
@@ -42,7 +40,7 @@ public class ProteinSequence {
             map.remove(index);
             map.put(index, new HydrophobicAcid());
         } else {
-            System.out.println("Error somewhere Idk");
+            System.out.println("Error somewhere while swaping a protein Idk");
         }
     }
 
