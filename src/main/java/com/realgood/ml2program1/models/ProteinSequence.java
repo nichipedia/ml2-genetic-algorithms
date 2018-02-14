@@ -15,9 +15,9 @@ public class ProteinSequence {
         map = new HashMap<>();
         length = aminoAcids.length();
         for (int i = 0; i < length; i++) {
-            if (aminoAcids.charAt(i) == 'h') {
+            if (aminoAcids.charAt(i) == 'h' || aminoAcids.charAt(i) == 'H') {
                 map.put(i, new HydrophobicAcid());
-            } else if (aminoAcids.charAt(i) == 'p') {
+            } else if (aminoAcids.charAt(i) == 'p' || aminoAcids.charAt(i) == 'P') {
                 map.put(i, new PolarAcid());
             } else {
                 System.out.println("Error somewhere while creating protein sequence Idk");
