@@ -1,6 +1,7 @@
 package com.realgood.ml2program1;
 
 import com.realgood.ml2program1.models.ProteinSequence;
+import com.realgood.ml2program1.models.ProteinSequenceStructure;
 import com.realgood.ml2program1.parser.ProteinSequenceParser;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +21,8 @@ public class Driver {
     private static void test() {
         ProteinSequenceParser repo = new ProteinSequenceParser("/Users/NicholasMoran/Downloads/input.txt");
         for (ProteinSequence sequence:repo.getProteinSequences()) {
+            ProteinSequenceStructure struct = new ProteinSequenceStructure(sequence);
+            System.out.println(struct);
             System.out.println("Acid: " + sequence.toString());
             System.out.println("Fitness: " + sequence.getFitness());
         }

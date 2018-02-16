@@ -1,5 +1,7 @@
 package com.realgood.ml2program1.models;
 
+import com.realgood.ml2program1.enums.Vector;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
@@ -11,6 +13,7 @@ import java.util.Set;
 public class ProteinSequenceStructure {
     private final ProteinSequence sequence;
     private final LinkedList<PSNode> structure;
+    private final int length;
     private final Random rando;
     private final Set<Point> visited;
 
@@ -19,58 +22,96 @@ public class ProteinSequenceStructure {
         this.rando = new Random();
         this.visited = new HashSet<>();
         this.structure = selfAvoidingWalk();
+        this.length = sequence.getLength();
+    }
+
+    public int getStructureLength() {
+        return this.length;
+    }
+
+    public LinkedList<PSNode> getStructure() {
+        return this.structure;
     }
 
     private LinkedList<PSNode> selfAvoidingWalk() {
         LinkedList<PSNode> tempStruct = new LinkedList<>();
         AminoAcid acid = this.sequence.getAcid(0);
-        PSNode first = new PSNode(0, 0, acid);
+        PSNode first = new PSNode(0, 0, acid, 0);
+        first.setPrevDirection(null);
+        first.setNextDirection(Vector.LEFT);
         acid = this.sequence.getAcid(1);
-        PSNode node = new PSNode(1, 0, acid);
+        PSNode node = new PSNode(1, 0, acid, 1);
+        node.setPrevDirection(Vector.LEFT);
         tempStruct.add(first);
-        tempStruct.add(node);
+        tempStruct.addLast(node);
         visited.add(new Point(1,0));
         visited.add(new Point(0,0));
         int i = 2;
         Point current = new Point(0, 1);
         while (i < sequence.getLength()) {
             if (movePossible(current)) {
-                Point next = chooseNextMove(current);
+                Vector direction = chooseNextMove(current);
                 acid = sequence.getAcid(i++);
-                node = new PSNode(next.getX(), next.getY(), acid);
-                this.structure.addLast(node);
+                Point next = getNextPoint(direction, current);
+                node = new PSNode(next.getX(), next.getY(), acid, i);
+                tempStruct.addLast(node);
                 this.visited.add(next);
+                current = next;
             } else {
                 while (!movePossible(current)) {
                     i--;
-                    PSNode temp = this.structure.removeLast();
-                    temp = this.structure.getLast();
-                    Point next = chooseNextMove(current);
+                    PSNode temp = tempStruct.removeLast();
+                    temp = tempStruct.getLast();
+                    current = new Point(temp.getX(), temp.getY());
+                    Vector direction = chooseNextMove(current);
+                    Point next = getNextPoint(direction, current);
                     acid = sequence.getAcid(i++);
-                    node = new PSNode(next.getX(), next.getY(), acid);
-                    this.structure.addLast(node);
+                    node = new PSNode(next.getX(), next.getY(), acid, i);
+                    tempStruct.addLast(node);
                     this.visited.add(next);
+                    current = next;
                 }
             }
-
         }
 
         return tempStruct;
     }
 
-    public Point chooseNextMove(Point current) {
+
+
+    public Vector chooseNextMove(Point current) {
         Point next = null;
-        if (rando.nextBoolean()) {
-            int newX = current.getX() + getRandom();
-            next = new Point(newX, current.getY());
+        Vector direction = null;
+        int eval = rando.nextInt(4);
+        if (eval == 0) {
+            next = new Point(current.getX() + 1, current.getY());
+            direction = Vector.RIGHT;
+        } else if (eval == 1) {
+            next = new Point(current.getX() - 1, current.getY());
+            direction = Vector.LEFT;
+        } else if (eval == 2) {
+            next = new Point(current.getX(), current.getY() + 1);
+            direction = Vector.UP;
         } else {
-            int newY = current.getX() + getRandom();
-            next = new Point(current.getX(), newY);
+            next = new Point(current.getX(), current.getY() - 1);
+            direction = Vector.DOWN;
         }
         if (!visited(next)) {
-            return new Point(next.getX(), next.getY());
+            return direction;
         } else {
             return chooseNextMove(current);
+        }
+    }
+
+    public Point getNextPoint(Vector direction, Point current) {
+        if (direction == Vector.UP) {
+            return new Point(current.getX(), current.getY() + 1);
+        } else if (direction == Vector.DOWN) {
+            return new Point(current.getX(), current.getY() - 1);
+        } else if (direction == Vector.LEFT) {
+            return new Point(current.getX() - 1, current.getY());
+        } else {
+            return new Point(current.getX() +1, current.getY());
         }
     }
 
@@ -93,5 +134,14 @@ public class ProteinSequenceStructure {
             }
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        String temp = "";
+        for (PSNode node:structure) {
+            temp += "X: " + node.getX() + ", Y: " + node.getY() + "\n";
+        }
+        return temp;
     }
 }

@@ -2,7 +2,7 @@ package com.realgood.ml2program1.statics;
 
 import com.realgood.ml2program1.models.AminoAcid;
 import com.realgood.ml2program1.models.ProteinSequence;
-import com.realgood.ml2program1.models.ProteinSequencePlan;
+
 
 import java.util.Random;
 
