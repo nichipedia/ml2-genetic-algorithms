@@ -40,7 +40,7 @@ public class FXCanvasApp extends Application {
         for (ProteinSequence sequence:repo.getProteinSequences()) {
             ProteinSequenceStructure struct = new ProteinSequenceStructure(sequence);
             drawStructure(struct);
-            System.out.println(struct);
+            System.out.println(struct.getFitness());
         }
         //drawShapes(gc);
         root.getChildren().add(canvas);
@@ -116,7 +116,7 @@ public class FXCanvasApp extends Application {
 
     private void drawEdge(Point p1, Point p2) {
         this.gc.setStroke(Color.BLACK);
-        gc.strokeLine(p1.getX() + 300, p1.getY() + 300, p2.getX() + 300, p2.getY() + 300);
+        gc.strokeLine(p1.getX() + 302, p1.getY() + 302, p2.getX() + 302, p2.getY() + 302);
     }
 
     private void setFillColor(AminoAcid acid) {

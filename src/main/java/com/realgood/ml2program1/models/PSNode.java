@@ -24,4 +24,8 @@ public class PSNode {
     public AminoAcid getAcid() {
         return this.acid;
     }
+
+    public int getStep() {
+        return this.step;
+    }
 }

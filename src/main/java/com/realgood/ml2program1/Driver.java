@@ -24,7 +24,7 @@ public class Driver {
             ProteinSequenceStructure struct = new ProteinSequenceStructure(sequence);
             System.out.println(struct);
             System.out.println("Acid: " + sequence.toString());
-            System.out.println("Fitness: " + sequence.getFitness());
+            System.out.println("Fitness: " + struct.getFitness());
         }
     }
 
