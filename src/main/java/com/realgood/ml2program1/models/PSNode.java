@@ -6,46 +6,22 @@ import com.realgood.ml2program1.enums.Vector;
  * Created by NicholasMoran on 2/14/18.
  */
 public class PSNode {
-    private final int x;
-    private final int y;
+    private final Point point;
     private final AminoAcid acid;
     private final int step;
-    private Vector nextDirection;
-    private Vector prevDirection;
 
 
-    public PSNode(int x, int y, AminoAcid acid, int step) {
-        this.x = x;
-        this.y = y;
+    public PSNode(Point point, AminoAcid acid, int step) {
+        this.point = point;
         this.acid = acid;
         this.step = step;
     }
 
-    public int getX() {
-        return this.x;
-    }
-
-    public int getY() {
-        return this.y;
+    public Point getPoint() {
+        return this.point;
     }
 
     public AminoAcid getAcid() {
         return this.acid;
-    }
-
-    public Vector getNextDirection() {
-        return nextDirection;
-    }
-
-    public void setNextDirection(Vector nextDirection) {
-        this.nextDirection = nextDirection;
-    }
-
-    public Vector getPrevDirection() {
-        return prevDirection;
-    }
-
-    public void setPrevDirection(Vector prevDirection) {
-        this.prevDirection = prevDirection;
     }
 }

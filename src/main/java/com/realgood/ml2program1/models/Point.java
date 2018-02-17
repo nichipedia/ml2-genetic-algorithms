@@ -1,5 +1,7 @@
 package com.realgood.ml2program1.models;
 
+import com.realgood.ml2program1.enums.Vector;
+
 /**
  * Created by NicholasMoran on 2/13/18.
  */
@@ -18,6 +20,20 @@ public class Point {
 
     public int getY() {
         return this.y;
+    }
+
+    public Vector getVector(Point p2) {
+        int dx = p2.getX() - this.x;
+        int dy = p2.getY() - this.y;
+        if (dx == 1 && dy == 0) {
+            return Vector.RIGHT;
+        } else if (dx == -1 && dy == 0) {
+            return Vector.LEFT;
+        } else if (dy == -1 && dx == 0) {
+            return Vector.DOWN;
+        } else {
+            return Vector.UP;
+        }
     }
 
     @Override

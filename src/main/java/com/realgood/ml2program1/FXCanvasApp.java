@@ -1,9 +1,7 @@
 package com.realgood.ml2program1;
 
-import com.realgood.ml2program1.models.PSNode;
-import com.realgood.ml2program1.models.Point;
-import com.realgood.ml2program1.models.ProteinSequence;
-import com.realgood.ml2program1.models.ProteinSequenceStructure;
+import com.realgood.ml2program1.enums.Vector;
+import com.realgood.ml2program1.models.*;
 import com.realgood.ml2program1.parser.ProteinSequenceParser;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -31,7 +29,7 @@ public class FXCanvasApp extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Drawing Operations Test");
         Group root = new Group();
-        canvas = new Canvas(300, 300);
+        canvas = new Canvas(600, 600);
         //canvas.setScaleY(2);
         //canvas.setScaleX(2);
         canvas.setTranslateX(50);
@@ -42,6 +40,7 @@ public class FXCanvasApp extends Application {
         for (ProteinSequence sequence:repo.getProteinSequences()) {
             ProteinSequenceStructure struct = new ProteinSequenceStructure(sequence);
             drawStructure(struct);
+            System.out.println(struct);
         }
         //drawShapes(gc);
         root.getChildren().add(canvas);
@@ -54,8 +53,43 @@ public class FXCanvasApp extends Application {
         //gc.transform(aff);
         gc.setFill(Color.GREEN);
         gc.setStroke(Color.BLUE);
-        for (PSNode node:structure.getStructure()) {
-            drawAcid(new Point(node.getX(), node.getY()));
+        int length = structure.getStructureLength();
+        PSNode start = structure.getNode(0);
+        drawAcid(start.getPoint(), start.getAcid());
+        Point current = start.getPoint();
+        Point prev = null;
+        for (int i = 0; i <= length; i++) {
+            PSNode node = structure.getNode(i);
+            PSNode next = structure.getNode(i+1);
+            if (next != null) {
+                if (node.getPoint().getVector(next.getPoint()) == Vector.RIGHT) {
+                    prev = current;
+                    current = new Point(current.getX() + 20, current.getY());
+                    drawEdge(prev, current);
+                    drawAcid(current, next.getAcid());
+                    drawAcid(prev, node.getAcid());
+                } else if (node.getPoint().getVector(next.getPoint()) == Vector.LEFT) {
+                    prev = current;
+                    current = new Point(current.getX() - 20, current.getY());
+                    drawEdge(prev, current);
+                    drawAcid(current, next.getAcid());
+                    drawAcid(prev, node.getAcid());
+                } else if (node.getPoint().getVector(next.getPoint()) == Vector.DOWN) {
+                    prev = current;
+                    current = new Point(current.getX(), current.getY() - 20);
+                    drawEdge(prev, current);
+                    drawAcid(current, next.getAcid());
+                    drawAcid(prev, node.getAcid());
+                } else {
+                    prev = current;
+                    current = new Point(current.getX(), current.getY() + 20);
+                    drawEdge(prev, current);
+                    drawAcid(current, next.getAcid());
+                    drawAcid(prev, node.getAcid());
+                }
+            } else {
+                System.out.println("WOO ODD NUMBAS!");
+            }
         }
     }
 
@@ -75,8 +109,24 @@ public class FXCanvasApp extends Application {
 //        gc.strokeArc(110, 160, 30, 30, 45, 240, ArcType.ROUND);
     }
 
-    private void drawAcid(Point point) {
-        gc.strokeRoundRect(point.getX() + 150, point.getY() + 150, 2, 2, 2, 2);
+    private void drawAcid(Point point, AminoAcid acid) {
+        setFillColor(acid);
+        gc.fillRoundRect(point.getX() + 300, point.getY() + 300, 5, 5, 5, 5);
+    }
+
+    private void drawEdge(Point p1, Point p2) {
+        this.gc.setStroke(Color.BLACK);
+        gc.strokeLine(p1.getX() + 300, p1.getY() + 300, p2.getX() + 300, p2.getY() + 300);
+    }
+
+    private void setFillColor(AminoAcid acid) {
+        if (acid instanceof HydrophobicAcid) {
+            this.gc.setStroke(Color.RED);
+            this.gc.setFill(Color.RED);
+        } else {
+            this.gc.setStroke(Color.BLUE);
+            this.gc.setFill(Color.BLUE);
+        }
     }
 
     private void moveCanvas(int x, int y) {
