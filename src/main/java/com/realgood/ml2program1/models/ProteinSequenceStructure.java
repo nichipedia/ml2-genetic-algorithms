@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Created by NicholasMoran on 2/14/18.
  */
-public class ProteinSequenceStructure {
+public class ProteinSequenceStructure implements Comparable<ProteinSequenceStructure> {
     private final ProteinSequence sequence;
     private final LinkedList<PSNode> structure;
     private final int length;
@@ -33,7 +33,7 @@ public class ProteinSequenceStructure {
         this.visited = generateVisited(frontSection, backSection);
         this.length = sequence.getLength();
         this.structure = sawCross(frontSection, backSection);
-        this.fitness = 0;
+        this.fitness = evaluate();
     }
 
     public int getFitness() {
@@ -41,39 +41,13 @@ public class ProteinSequenceStructure {
     }
 
     private int evaluate() {
-        int maxY = findMaxY(structure);
-        int minY = findMinY(structure);
-        int maxX = findMaxX(structure);
-        int minX = findMinX(structure);
         int fitness = 0;
-//        for (int i = maxY; i >= minY; i--) {
-//            for (int j = maxX; j >= minX; j--) {
-//                for (PSNode node:structure) {
-//                    Point point = node.getPoint();
-//                    if (node.getAcid() instanceof HydrophobicAcid && point.equals(new Point(j, i))) {
-//                        int step = node.getStep();
-//                        Point downPoint = new Point(j, i-1);
-//                        Point leftPoint = new Point(j-1, i);
-//                        PSNode prev = structure.get(step-1);
-//                        PSNode next = structure.get(step+1);
-//                        if (prev != null) {
-//                            if (!prev.getPoint().equals(leftPoint) && !next.getPoint().equals(leftPoint)) {
-//                                AminoAcid leftAcid = typeOfPoint(leftPoint);
-//                                if (leftAcid != null && leftAcid instanceof HydrophobicAcid) {
-//                                    fitness++;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-        PSNode[][] graph = new PSNode[150][150];
+        PSNode[][] graph = new PSNode[300][300];
         for (PSNode node:structure) {
-            graph[node.getPoint().getY()+75][node.getPoint().getX()+75] = node;
+            graph[node.getPoint().getY()+150][node.getPoint().getX()+150] = node;
         }
-        for (int y = 0; y < 150; y++) {
-            for (int x = 0; x < 150; x++) {
+        for (int y = 0; y < 300; y++) {
+            for (int x = 0; x < 300; x++) {
                 if (graph[y][x] != null && graph[y][x].getAcid() instanceof HydrophobicAcid) {
                     if (graph[y+1][x] != null && !connected(graph[y][x], graph[y+1][x]) && typeOfPoint(graph[y+1][x].getPoint()) instanceof HydrophobicAcid) {
                         fitness++;
@@ -119,51 +93,28 @@ public class ProteinSequenceStructure {
         return false;
     }
 
-    private int findMaxX(LinkedList<PSNode> tempStruct) {
-        int max = Integer.MIN_VALUE;
-        for (PSNode node:tempStruct) {
-            if (node.getPoint().getX() > max) {
-                max = node.getPoint().getX();
-            }
-        }
-        return max;
-    }
-
-    private int findMinX(LinkedList<PSNode> tempStruct) {
-        int min = Integer.MAX_VALUE;
-        for (PSNode node:tempStruct) {
-            if (node.getPoint().getX() < min) {
-                min = node.getPoint().getX();
-            }
-        }
-        return min;
-    }
-
-    private int findMinY(LinkedList<PSNode> tempStruct) {
-        int min = Integer.MAX_VALUE;
-        for (PSNode node:tempStruct) {
-            if (node.getPoint().getY() < min) {
-                min = node.getPoint().getY();
-            }
-        }
-        return min;
-    }
-
-    private int findMaxY(LinkedList<PSNode> tempStruct) {
-        int max = Integer.MIN_VALUE;
-        for (PSNode node:tempStruct) {
-            if (node.getPoint().getY() > max) {
-                max = node.getPoint().getY();
-            }
-        }
-        return max;
-    }
 
     private LinkedList<PSNode> sawCross(LinkedList<PSNode> sect1, LinkedList<PSNode> sect2) {
         LinkedList<PSNode> temp = new LinkedList<>();
-        temp.addAll(sect1);
-        temp.addAll(sect2);
-        return temp;
+        if (validCross(sect1, sect2)) {
+            temp.addAll(sect1);
+            temp.addAll(sect2);
+            return temp;
+        } else {
+            pruneVisited(temp);
+            return selfAvoidingWalk();
+        }
+    }
+
+    private boolean validCross(LinkedList<PSNode> sect1, LinkedList<PSNode> sect2) {
+        for (PSNode first:sect1) {
+            for (PSNode second:sect2) {
+                if (first.getPoint().equals(second.getPoint())) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private Set<Point> generateVisited(LinkedList<PSNode> frontSection, LinkedList<PSNode> backSection) {
@@ -222,7 +173,7 @@ public class ProteinSequenceStructure {
         return null;
     }
 
-    public void pruneVisited(LinkedList<PSNode> tempStruct) {
+    private void pruneVisited(LinkedList<PSNode> tempStruct) {
         visited.clear();
         for (PSNode node:tempStruct) {
             visited.add(node.getPoint());
@@ -230,7 +181,7 @@ public class ProteinSequenceStructure {
     }
 
 
-    public Point chooseNextMove(Point current) {
+    private Point chooseNextMove(Point current) {
         Point next = null;
         int eval = rando.nextInt(4);
         if (eval == 0) {
@@ -251,7 +202,7 @@ public class ProteinSequenceStructure {
 
 
 
-    public boolean movePossible(Point current) {
+    private boolean movePossible(Point current) {
         Point left = new Point(current.getX() - 1, current.getY());
         Point down = new Point(current.getX(), current.getY() - 1);
         Point right = new Point(current.getX() + 1, current.getY());
@@ -280,5 +231,10 @@ public class ProteinSequenceStructure {
             temp += "X: " + point.getX() + ", Y: " + point.getY() + "\n";
         }
         return temp;
+    }
+
+    @Override
+    public int compareTo(ProteinSequenceStructure o) {
+        return o.getFitness() - this.fitness;
     }
 }

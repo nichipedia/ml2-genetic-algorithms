@@ -19,13 +19,7 @@ public class Driver {
     }
 
     private static void test() {
-        ProteinSequenceParser repo = new ProteinSequenceParser("/Users/NicholasMoran/Downloads/input.txt");
-        for (ProteinSequence sequence:repo.getProteinSequences()) {
-            ProteinSequenceStructure struct = new ProteinSequenceStructure(sequence);
-            System.out.println(struct);
-            System.out.println("Acid: " + sequence.toString());
-            System.out.println("Fitness: " + struct.getFitness());
-        }
+        hillClimb();
     }
 
     private static void hillClimb() {

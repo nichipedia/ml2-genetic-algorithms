@@ -4,14 +4,21 @@ import com.realgood.ml2program1.enums.Vector;
 import com.realgood.ml2program1.models.*;
 import com.realgood.ml2program1.parser.ProteinSequenceParser;
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
+
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Created by NicholasMoran on 2/15/18.
@@ -20,6 +27,7 @@ public class FXCanvasApp extends Application {
 
     private Canvas canvas;
     private GraphicsContext gc;
+    private Label fitnessValue;
 
     public static void main(String[] args) {
         launch(args);
@@ -27,7 +35,7 @@ public class FXCanvasApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Drawing Operations Test");
+        primaryStage.setTitle("Program 1");
         Group root = new Group();
         canvas = new Canvas(600, 600);
         //canvas.setScaleY(2);
@@ -35,12 +43,23 @@ public class FXCanvasApp extends Application {
         canvas.setTranslateX(50);
         canvas.setTranslateY(50);
         gc = canvas.getGraphicsContext2D();
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        Label fitnessLabel = new Label("Fitness: ");
+        fitnessValue = new Label();
+        grid.add(fitnessLabel, 0, 1);
+        grid.add(fitnessValue, 1,1);
+        root.getChildren().add(grid);
 
-        ProteinSequenceParser repo = new ProteinSequenceParser("/Users/NicholasMoran/Downloads/input.txt");
-        for (ProteinSequence sequence:repo.getProteinSequences()) {
-            ProteinSequenceStructure struct = new ProteinSequenceStructure(sequence);
-            drawStructure(struct);
-            System.out.println(struct.getFitness());
+        ProteinSequenceParser parser = new ProteinSequenceParser("/Users/NicholasMoran/Downloads/input.txt");
+        for (ProteinSequence sequence:parser.getProteinSequences()) {
+            ProteinSequenceStructure[] repo = new ProteinSequenceStructure[200];
+            for(int i = 0; i < 200; i++) {
+                repo[i] = new ProteinSequenceStructure(sequence);
+            }
+            Arrays.sort(repo);
+            fitnessValue.setText(Integer.toString(repo[0].getFitness() * -1));
+            drawStructure(repo[0]);
         }
         //drawShapes(gc);
         root.getChildren().add(canvas);

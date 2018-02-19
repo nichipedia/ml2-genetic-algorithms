@@ -20,3 +20,10 @@ sourceSets {
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
 }
+
+jar {
+    version = null
+    manifest {
+        attributes 'Main-Class': 'com.realgood.ml2program1.Driver'
+    }
+}
