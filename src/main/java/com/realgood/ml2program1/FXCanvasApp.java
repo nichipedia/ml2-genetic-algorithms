@@ -19,6 +19,7 @@ import javafx.scene.paint.Color;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Random;
 
 /**
  * Created by NicholasMoran on 2/15/18.
@@ -50,6 +51,9 @@ public class FXCanvasApp extends Application {
         grid.add(fitnessLabel, 0, 1);
         grid.add(fitnessValue, 1,1);
         root.getChildren().add(grid);
+        root.getChildren().add(canvas);
+        primaryStage.setScene(new Scene(root));
+        primaryStage.show();
 
         ProteinSequenceParser parser = new ProteinSequenceParser("/Users/NicholasMoran/Downloads/input.txt");
         for (ProteinSequence sequence:parser.getProteinSequences()) {
@@ -58,13 +62,53 @@ public class FXCanvasApp extends Application {
                 repo[i] = new ProteinSequenceStructure(sequence);
             }
             Arrays.sort(repo);
-            fitnessValue.setText(Integer.toString(repo[0].getFitness() * -1));
             drawStructure(repo[0]);
+
+            for (int i = 0; i < 10 && repo[0].getFitness() < 9; i++) {
+
+                ProteinSequenceStructure[] nextGen = new ProteinSequenceStructure[200];
+
+                for (int j = 0; j < 10; j++) {
+                    nextGen[j] = repo[j];
+                }
+
+                for (int j = 10; j < 200; j++) {
+                    ProteinSequenceStructure father = rws(repo);
+                    ProteinSequenceStructure mother = rws(repo);
+                    nextGen[j] = new ProteinSequenceStructure(mother, father, sequence);
+                }
+
+                repo = nextGen;
+
+                Arrays.sort(repo);
+                fitnessValue.setText(Integer.toString(repo[0].getFitness() * -1));
+                gc.clearRect(0,0,600,600);
+                drawStructure(repo[0]);
+            }
+
+
         }
         //drawShapes(gc);
-        root.getChildren().add(canvas);
-        primaryStage.setScene(new Scene(root));
-        primaryStage.show();
+
+
+    }
+
+    private ProteinSequenceStructure rws(ProteinSequenceStructure[] structs) {
+        int sum = 0;
+        int partial = 0;
+        for (ProteinSequenceStructure struct:structs) {
+            sum += struct.getFitness();
+        }
+        Random rando = new Random();
+        int bound = rando.nextInt(sum);
+
+        for (int i = 0; i < structs.length; i++) {
+            partial += structs[i].getFitness();
+            if (partial > bound) {
+                return structs[i];
+            }
+        }
+        return null;
     }
 
     private void drawStructure(ProteinSequenceStructure structure) {

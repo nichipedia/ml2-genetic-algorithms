@@ -27,10 +27,10 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
         this.fitness = evaluate();
     }
 
-    public ProteinSequenceStructure(LinkedList<PSNode> frontSection, LinkedList<PSNode> backSection, ProteinSequence sequence) {
+    public ProteinSequenceStructure(ProteinSequenceStructure frontSection, ProteinSequenceStructure backSection, ProteinSequence sequence) {
         this.sequence = sequence;
         this.rando = new Random();
-        this.visited = generateVisited(frontSection, backSection);
+        this.visited = new HashSet<>();
         this.length = sequence.getLength();
         this.structure = sawCross(frontSection, backSection);
         this.fitness = evaluate();
@@ -42,12 +42,12 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
 
     private int evaluate() {
         int fitness = 0;
-        PSNode[][] graph = new PSNode[300][300];
+        PSNode[][] graph = new PSNode[600][600];
         for (PSNode node:structure) {
-            graph[node.getPoint().getY()+150][node.getPoint().getX()+150] = node;
+            graph[node.getPoint().getY()+300][node.getPoint().getX()+300] = node;
         }
-        for (int y = 0; y < 300; y++) {
-            for (int x = 0; x < 300; x++) {
+        for (int y = 0; y < 600; y++) {
+            for (int x = 0; x < 600; x++) {
                 if (graph[y][x] != null && graph[y][x].getAcid() instanceof HydrophobicAcid) {
                     if (graph[y+1][x] != null && !connected(graph[y][x], graph[y+1][x]) && typeOfPoint(graph[y+1][x].getPoint()) instanceof HydrophobicAcid) {
                         fitness++;
@@ -94,16 +94,33 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
     }
 
 
-    private LinkedList<PSNode> sawCross(LinkedList<PSNode> sect1, LinkedList<PSNode> sect2) {
+    private LinkedList<PSNode> sawCross(ProteinSequenceStructure mother, ProteinSequenceStructure father) {
         LinkedList<PSNode> temp = new LinkedList<>();
-        if (validCross(sect1, sect2)) {
-            temp.addAll(sect1);
-            temp.addAll(sect2);
-            return temp;
-        } else {
-            pruneVisited(temp);
-            return selfAvoidingWalk();
+        LinkedList<PSNode> sect1 = new LinkedList<>();
+        LinkedList<PSNode> sect2 = new LinkedList<>();
+        int max = this.sequence.getLength();
+        for (int i = 0; i < max; i++) {
+            int index = rando.nextInt(max);
+
+            for (int j = 0; j < index; j++) {
+                sect1.add(mother.getNode(j));
+            }
+            for (int j = index; j < max; j++) {
+                sect2.add(father.getNode(j));
+            }
+            if (validCross(sect1, sect2)) {
+                for (PSNode node : sect1) {
+                    temp.addLast(node);
+                }
+                for (PSNode node : sect2) {
+                    temp.addLast(node);
+                }
+                return temp;
+            }
+            sect1.clear();
+            sect2.clear();
         }
+        return selfAvoidingWalk();
     }
 
     private boolean validCross(LinkedList<PSNode> sect1, LinkedList<PSNode> sect2) {
@@ -117,16 +134,16 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
         return true;
     }
 
-    private Set<Point> generateVisited(LinkedList<PSNode> frontSection, LinkedList<PSNode> backSection) {
-        Set<Point> temp = new HashSet<>();
-        for (PSNode node:frontSection) {
-            temp.add(node.getPoint());
-        }
-        for (PSNode node:backSection) {
-            temp.add(node.getPoint());
-        }
-        return temp;
-    }
+//    private Set<Point> generateVisited(LinkedList<PSNode> frontSection, LinkedList<PSNode> backSection) {
+//        Set<Point> temp = new HashSet<>();
+//        for (PSNode node:frontSection) {
+//            temp.add(node.getPoint());
+//        }
+//        for (PSNode node:backSection) {
+//            temp.add(node.getPoint());
+//        }
+//        return temp;
+//    }
 
     public int getStructureLength() {
         return this.length;
