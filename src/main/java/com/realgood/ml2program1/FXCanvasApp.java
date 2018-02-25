@@ -4,6 +4,7 @@ import com.realgood.ml2program1.enums.Vector;
 import com.realgood.ml2program1.models.*;
 import com.realgood.ml2program1.parser.ProteinSequenceParser;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -62,6 +63,8 @@ public class FXCanvasApp extends Application {
                 repo[i] = new ProteinSequenceStructure(sequence);
             }
             Arrays.sort(repo);
+
+            //Platform.runLater(new StructureDrawer(repo[0], gc));
             drawStructure(repo[0]);
 
             for (int i = 0; i < 10 && repo[0].getFitness() < 9; i++) {
@@ -73,9 +76,10 @@ public class FXCanvasApp extends Application {
                 }
 
                 for (int j = 10; j < 200; j++) {
-                    ProteinSequenceStructure father = rws(repo);
-                    ProteinSequenceStructure mother = rws(repo);
-                    nextGen[j] = new ProteinSequenceStructure(mother, father, sequence);
+                    //ProteinSequenceStructure father = rws(repo);
+                    //ProteinSequenceStructure mother = rws(repo);
+                    //nextGen[j] = new ProteinSequenceStructure(mother, father, sequence);
+                    nextGen[j] = new ProteinSequenceStructure(sequence);
                 }
 
                 repo = nextGen;
@@ -83,6 +87,7 @@ public class FXCanvasApp extends Application {
                 Arrays.sort(repo);
                 fitnessValue.setText(Integer.toString(repo[0].getFitness() * -1));
                 gc.clearRect(0,0,600,600);
+                //Platform.runLater(new StructureDrawer(repo[0], gc));
                 drawStructure(repo[0]);
             }
 

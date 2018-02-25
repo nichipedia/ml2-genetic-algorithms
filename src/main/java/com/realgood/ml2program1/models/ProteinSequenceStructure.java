@@ -101,24 +101,32 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
         int max = this.sequence.getLength();
         for (int i = 0; i < max; i++) {
             int index = rando.nextInt(max);
-
+            boolean valid = true;
             for (int j = 0; j < index; j++) {
                 sect1.add(mother.getNode(j));
+                visited.add(mother.getNode(j).getPoint());
             }
+
             for (int j = index; j < max; j++) {
-                sect2.add(father.getNode(j));
+                if (!visited(father.getNode(j).getPoint())) {
+                    sect2.add(father.getNode(j));
+                    visited.add(father.getNode(j).getPoint());
+                } else {
+                    j = max;
+                    valid = !valid;
+                }
             }
-            if (validCross(sect1, sect2)) {
-                for (PSNode node : sect1) {
+
+            if (valid) {
+                for (PSNode node:sect1) {
                     temp.addLast(node);
                 }
-                for (PSNode node : sect2) {
+                for (PSNode node:sect2) {
                     temp.addLast(node);
                 }
-                return temp;
+            } else {
+                visited.clear();
             }
-            sect1.clear();
-            sect2.clear();
         }
         return selfAvoidingWalk();
     }
