@@ -130,6 +130,7 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
                 visited.clear();
             }
         }
+        visited.clear();
         return selfAvoidingWalk();
     }
 
