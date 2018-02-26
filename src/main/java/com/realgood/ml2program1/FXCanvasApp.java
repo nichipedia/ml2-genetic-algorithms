@@ -3,6 +3,8 @@ package com.realgood.ml2program1;
 import com.realgood.ml2program1.enums.Vector;
 import com.realgood.ml2program1.models.*;
 import com.realgood.ml2program1.parser.ProteinSequenceParser;
+import javafx.animation.Animation;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -56,21 +58,19 @@ public class FXCanvasApp extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
-        ProteinSequenceParser parser = new ProteinSequenceParser("/Users/NicholasMoran/Downloads/input.txt");
+        ProteinSequenceParser parser = new ProteinSequenceParser("C:\\Users\\nmoran\\Desktop\\junk\\input.txt");
         for (ProteinSequence sequence:parser.getProteinSequences()) {
             ProteinSequenceStructure[] repo = new ProteinSequenceStructure[200];
+            ProteinSequenceStructure[] nextGen = new ProteinSequenceStructure[200];
             for(int i = 0; i < 200; i++) {
                 repo[i] = new ProteinSequenceStructure(sequence);
             }
             Arrays.sort(repo);
 
-            //Platform.runLater(new StructureDrawer(repo[0], gc));
-            drawStructure(repo[0]);
+            Platform.runLater(new StructureDrawer(repo[0], gc));
+            //drawStructure(repo[0]);
 
-            for (int i = 0; i < 10 && repo[0].getFitness() < 9; i++) {
-
-                ProteinSequenceStructure[] nextGen = new ProteinSequenceStructure[200];
-
+            for (int i = 0; i < 2000 && repo[0].getFitness() < 9; i++) {
                 for (int j = 0; j < 10; j++) {
                     nextGen[j] = repo[j];
                 }
@@ -82,13 +82,13 @@ public class FXCanvasApp extends Application {
                     nextGen[j] = new ProteinSequenceStructure(sequence);
                 }
 
-                repo = nextGen;
+               repo = nextGen;
 
                 Arrays.sort(repo);
-                fitnessValue.setText(Integer.toString(repo[0].getFitness() * -1));
-                gc.clearRect(0,0,600,600);
-                //Platform.runLater(new StructureDrawer(repo[0], gc));
-                drawStructure(repo[0]);
+
+                //gc.clearRect(0,0,600,600);
+                Platform.runLater(new StructureDrawer(repo[0], gc));
+                //drawStructure(repo[0]);
             }
 
 
@@ -117,48 +117,61 @@ public class FXCanvasApp extends Application {
     }
 
     private void drawStructure(ProteinSequenceStructure structure) {
-        //Affine aff = new Affine(1,0, 50, 0, 1, 50);
-        //gc.transform(aff);
-        gc.setFill(Color.GREEN);
-        gc.setStroke(Color.BLUE);
-        int length = structure.getStructureLength();
-        PSNode start = structure.getNode(0);
-        drawAcid(start.getPoint(), start.getAcid());
-        Point current = start.getPoint();
-        Point prev = null;
-        for (int i = 0; i <= length; i++) {
-            PSNode node = structure.getNode(i);
-            PSNode next = structure.getNode(i+1);
-            if (next != null) {
-                if (node.getPoint().getVector(next.getPoint()) == Vector.RIGHT) {
-                    prev = current;
-                    current = new Point(current.getX() + 20, current.getY());
-                    drawEdge(prev, current);
-                    drawAcid(current, next.getAcid());
-                    drawAcid(prev, node.getAcid());
-                } else if (node.getPoint().getVector(next.getPoint()) == Vector.LEFT) {
-                    prev = current;
-                    current = new Point(current.getX() - 20, current.getY());
-                    drawEdge(prev, current);
-                    drawAcid(current, next.getAcid());
-                    drawAcid(prev, node.getAcid());
-                } else if (node.getPoint().getVector(next.getPoint()) == Vector.DOWN) {
-                    prev = current;
-                    current = new Point(current.getX(), current.getY() - 20);
-                    drawEdge(prev, current);
-                    drawAcid(current, next.getAcid());
-                    drawAcid(prev, node.getAcid());
-                } else {
-                    prev = current;
-                    current = new Point(current.getX(), current.getY() + 20);
-                    drawEdge(prev, current);
-                    drawAcid(current, next.getAcid());
-                    drawAcid(prev, node.getAcid());
+
+        new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                //Affine aff = new Affine(1,0, 50, 0, 1, 50);
+                //gc.transform(aff);
+                gc.setFill(Color.GREEN);
+                gc.setStroke(Color.BLUE);
+                int length = structure.getStructureLength();
+                PSNode start = structure.getNode(0);
+
+                drawAcid(start.getPoint(), start.
+
+                        getAcid());
+                Point current = start.getPoint();
+                Point prev = null;
+                for (
+                        int i = 0;
+                        i <= length; i++)
+
+                {
+                    PSNode node = structure.getNode(i);
+                    PSNode next = structure.getNode(i + 1);
+                    if (next != null) {
+                        if (node.getPoint().getVector(next.getPoint()) == Vector.RIGHT) {
+                            prev = current;
+                            current = new Point(current.getX() + 20, current.getY());
+                            drawEdge(prev, current);
+                            drawAcid(current, next.getAcid());
+                            drawAcid(prev, node.getAcid());
+                        } else if (node.getPoint().getVector(next.getPoint()) == Vector.LEFT) {
+                            prev = current;
+                            current = new Point(current.getX() - 20, current.getY());
+                            drawEdge(prev, current);
+                            drawAcid(current, next.getAcid());
+                            drawAcid(prev, node.getAcid());
+                        } else if (node.getPoint().getVector(next.getPoint()) == Vector.DOWN) {
+                            prev = current;
+                            current = new Point(current.getX(), current.getY() - 20);
+                            drawEdge(prev, current);
+                            drawAcid(current, next.getAcid());
+                            drawAcid(prev, node.getAcid());
+                        } else {
+                            prev = current;
+                            current = new Point(current.getX(), current.getY() + 20);
+                            drawEdge(prev, current);
+                            drawAcid(current, next.getAcid());
+                            drawAcid(prev, node.getAcid());
+                        }
+                    } else {
+                        System.out.println("WOO ODD NUMBAS!");
+                    }
                 }
-            } else {
-                System.out.println("WOO ODD NUMBAS!");
             }
-        }
+        }.start();
     }
 
     private void drawShapes(GraphicsContext gc) {

@@ -41,6 +41,7 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
     }
 
     private int evaluate() {
+        System.out.println("eval");
         int fitness = 0;
         PSNode[][] graph = new PSNode[600][600];
         for (PSNode node:structure) {
@@ -71,6 +72,7 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
     }
 
     private boolean connected(PSNode first, PSNode second) {
+        System.out.println("connected");
         int i = 0;
         while (i<structure.size()) {
             PSNode temp = structure.get(i);
@@ -158,6 +160,7 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
     }
 
     private LinkedList<PSNode> selfAvoidingWalk() {
+        System.out.println("saw");
         LinkedList<PSNode> tempStruct = new LinkedList<>();
         AminoAcid acid = this.sequence.getAcid(0);
         PSNode first = new PSNode(new Point(0,0), acid, 0);
@@ -183,8 +186,8 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
                     PSNode temp = tempStruct.removeLast();
                     temp = tempStruct.getLast();
                     current = temp.getPoint();
+                    //pruneVisited(tempStruct);
                 }
-                pruneVisited(tempStruct);
             }
         }
 
@@ -207,6 +210,7 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
 
 
     private Point chooseNextMove(Point current) {
+        System.out.println("choose");
         Point next = null;
         int eval = rando.nextInt(4);
         if (eval == 0) {
@@ -218,11 +222,25 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
         } else {
             next = new Point(current.getX(), current.getY() - 1);
         }
-        if (!visited(next)) {
-            return next;
-        } else {
-            return chooseNextMove(current);
+        if (visited(next)) {
+            next = new Point(current.getX() + 1, current.getY());
+            if (!visited(next)) {
+                return next;
+            }
+            next = new Point(current.getX() - 1, current.getY());
+            if (!visited(next)) {
+                return next;
+            }
+            next = new Point(current.getX(), current.getY() + 1);
+            if (!visited(next)) {
+                return next;
+            }
+            next = new Point(current.getX(), current.getY() - 1);
+            if (!visited(next)) {
+                return next;
+            }
         }
+        return next;
     }
 
 

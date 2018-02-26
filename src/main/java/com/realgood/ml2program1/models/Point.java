@@ -2,9 +2,13 @@ package com.realgood.ml2program1.models;
 
 import com.realgood.ml2program1.enums.Vector;
 
-/**
- * Created by NicholasMoran on 2/13/18.
- */
+/*******************************************
+ * <h1>Main class for Canvas app            *
+ * Class is the intro to the canvas app     *
+ * @author Nicholas Moran                   *
+ * @version 1.0                             *
+ *                                          *
+ *******************************************/
 public class Point {
     private final int x;
     private final int y;
