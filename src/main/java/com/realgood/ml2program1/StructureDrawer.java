@@ -2,31 +2,64 @@ package com.realgood.ml2program1;
 
 import com.realgood.ml2program1.enums.Vector;
 import com.realgood.ml2program1.models.*;
+import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+
+import java.util.Arrays;
 
 /**
  * Created by NicholasMoran on 2/25/18.
  */
 public class StructureDrawer implements Runnable {
 
-    private final ProteinSequenceStructure struct;
+    private final ProteinSequence sequence;
     private final GraphicsContext gc;
 
-    public StructureDrawer(ProteinSequenceStructure structure, GraphicsContext graphicsContext) {
-        this.struct = structure;
+    public StructureDrawer(ProteinSequence sequence, GraphicsContext graphicsContext) {
+        this.sequence = sequence;
         this.gc = graphicsContext;
     }
 
     @Override
     public void run() {
-        gc.clearRect(0,0,600,600);
-        drawStructure(struct);
+        ProteinSequenceStructure[] repo = new ProteinSequenceStructure[200];
+        ProteinSequenceStructure[] nextGen = new ProteinSequenceStructure[200];
+        for(int i = 0; i < 200; i++) {
+            repo[i] = new ProteinSequenceStructure(sequence);
+        }
+        Arrays.sort(repo);
+
+        drawStructure(repo[0]);
+
+
+        for (int i = 0; i < 2000 && repo[0].getFitness() < -1*sequence.getFitness(); i++) {
+            for (int j = 0; j < 10; j++) {
+                nextGen[j] = repo[j];
+            }
+
+            for (int j = 10; j < 200; j++) {
+                //ProteinSequenceStructure father = rws(repo);
+                //ProteinSequenceStructure mother = rws(repo);
+                //nextGen[j] = new ProteinSequenceStructure(mother, father, sequence);
+                nextGen[j] = new ProteinSequenceStructure(sequence);
+            }
+
+            repo = nextGen;
+
+            Arrays.sort(repo);
+
+            //gc.clearRect(0,0,600,600);
+
+            drawStructure(repo[0]);
+        }
+        //drawStructure(repo);
     }
 
     private void drawStructure(ProteinSequenceStructure structure) {
         //Affine aff = new Affine(1,0, 50, 0, 1, 50);
         //gc.transform(aff);
+        gc.clearRect(0,0,600,600);
         gc.setFill(Color.GREEN);
         gc.setStroke(Color.BLUE);
         int length = structure.getStructureLength();

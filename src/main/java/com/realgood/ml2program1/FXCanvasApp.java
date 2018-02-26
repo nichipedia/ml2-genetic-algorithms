@@ -60,38 +60,7 @@ public class FXCanvasApp extends Application {
 
         ProteinSequenceParser parser = new ProteinSequenceParser("C:\\Users\\nmoran\\Desktop\\junk\\input.txt");
         for (ProteinSequence sequence:parser.getProteinSequences()) {
-            ProteinSequenceStructure[] repo = new ProteinSequenceStructure[200];
-            ProteinSequenceStructure[] nextGen = new ProteinSequenceStructure[200];
-            for(int i = 0; i < 200; i++) {
-                repo[i] = new ProteinSequenceStructure(sequence);
-            }
-            Arrays.sort(repo);
-
-            Platform.runLater(new StructureDrawer(repo[0], gc));
-            //drawStructure(repo[0]);
-
-            for (int i = 0; i < 2000 && repo[0].getFitness() < 9; i++) {
-                for (int j = 0; j < 10; j++) {
-                    nextGen[j] = repo[j];
-                }
-
-                for (int j = 10; j < 200; j++) {
-                    //ProteinSequenceStructure father = rws(repo);
-                    //ProteinSequenceStructure mother = rws(repo);
-                    //nextGen[j] = new ProteinSequenceStructure(mother, father, sequence);
-                    nextGen[j] = new ProteinSequenceStructure(sequence);
-                }
-
-               repo = nextGen;
-
-                Arrays.sort(repo);
-
-                //gc.clearRect(0,0,600,600);
-                Platform.runLater(new StructureDrawer(repo[0], gc));
-                //drawStructure(repo[0]);
-            }
-
-
+          Platform.runLater(new StructureDrawer(sequence, gc));
         }
         //drawShapes(gc);
 
