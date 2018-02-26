@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class CanvasDrawTask<T> extends AnimationTimer {
 
-    private final AtomicReference<T> data = new AtomicReference<T>(null);
+    private final AtomicReference<T> data = new AtomicReference<>(null);
     private final Canvas canvas;
 
     public CanvasDrawTask(Canvas canvas) {
@@ -31,8 +31,8 @@ public class CanvasDrawTask<T> extends AnimationTimer {
         }
     }
 
-    private final void draw(GraphicsContext gc, ProteinSequenceStructure structure) {
-        //gc.clearRect(0,0,600,600);
+     final void draw(GraphicsContext gc, ProteinSequenceStructure structure) {
+        gc.clearRect(0,0,600,600);
         gc.setFill(Color.GREEN);
         gc.setStroke(Color.BLUE);
         int length = structure.getStructureLength();

@@ -7,11 +7,14 @@ import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -22,6 +25,7 @@ import javafx.scene.paint.Color;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -32,6 +36,10 @@ public class FXCanvasApp extends Application {
     private Canvas canvas;
 
     private Label fitnessValue;
+
+    private int i = 0;
+
+    List<ProteinSequence> sequences;
 
     public static void main(String[] args) {
         launch(args);
@@ -49,18 +57,26 @@ public class FXCanvasApp extends Application {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
         Label fitnessLabel = new Label("Fitness: ");
+        Button startButton = new Button("Next Sequence");
         fitnessValue = new Label();
         grid.add(fitnessLabel, 0, 1);
         grid.add(fitnessValue, 1,1);
+        grid.add(startButton, 2, 0);
         root.getChildren().add(grid);
         root.getChildren().add(canvas);
         primaryStage.setScene(new Scene(root));
 
 
         ProteinSequenceParser parser = new ProteinSequenceParser("C:\\Users\\nmoran\\Desktop\\junk\\input.txt");
-        for (ProteinSequence sequence:parser.getProteinSequences()) {
-           Platform.runLater(new StructureDrawer(sequence, canvas));
-        }
+        sequences = parser.getProteinSequences();
+        startButton.setOnAction(event -> {
+            fitnessValue.setText(Integer.toString(sequences.get(i).getFitness()));
+            StructureDrawer drawer = new StructureDrawer(sequences.get(i++), canvas);
+            Thread t = new Thread(drawer);
+            t.setDaemon(true);
+            t.start();
+        });
+
         //drawShapes(gc);
 
         primaryStage.show();

@@ -41,7 +41,6 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
     }
 
     private int evaluate() {
-        System.out.println("eval");
         int fitness = 0;
         PSNode[][] graph = new PSNode[600][600];
         for (PSNode node:structure) {
@@ -72,7 +71,6 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
     }
 
     private boolean connected(PSNode first, PSNode second) {
-        System.out.println("connected");
         int i = 0;
         while (i<structure.size()) {
             PSNode temp = structure.get(i);
@@ -161,7 +159,6 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
     }
 
     private LinkedList<PSNode> selfAvoidingWalk() {
-        System.out.println("saw");
         LinkedList<PSNode> tempStruct = new LinkedList<>();
         AminoAcid acid = this.sequence.getAcid(0);
         PSNode first = new PSNode(new Point(0,0), acid, 0);
@@ -211,7 +208,6 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
 
 
     private Point chooseNextMove(Point current) {
-        System.out.println("choose");
         Point next = null;
         int eval = rando.nextInt(4);
         if (eval == 0) {
@@ -269,11 +265,9 @@ public class ProteinSequenceStructure implements Comparable<ProteinSequenceStruc
 
     @Override
     public String toString() {
-        String temp = "";
-        for (PSNode node:structure) {
-            Point point = node.getPoint();
-            temp += "X: " + point.getX() + ", Y: " + point.getY() + "\n";
-        }
+        String temp = "Fitness: " + this.fitness + ", ";
+        temp += "Sequence: " + this.sequence + ", ";
+        temp += "Optimal Fitness: " + this.sequence.getFitness();
         return temp;
     }
 

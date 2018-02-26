@@ -5,10 +5,13 @@ import com.realgood.ml2program1.models.*;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
+
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.function.Consumer;
 
 /**
  * Created by NicholasMoran on 2/25/18.
@@ -17,10 +20,16 @@ public class StructureDrawer implements Runnable {
 
     private final ProteinSequence sequence;
     private final Canvas canvas;
+    private boolean run;
 
     public StructureDrawer(ProteinSequence sequence, Canvas canvas) {
         this.sequence = sequence;
         this.canvas = canvas;
+        this.run = true;
+    }
+
+    public boolean running() {
+        return run;
     }
 
     @Override
@@ -36,7 +45,7 @@ public class StructureDrawer implements Runnable {
         drawer.requestRedraw(repo[0]);
         //drawStructure(repo[0]);
 
-        for (int i = 0; i < 10 && repo[0].getFitness() < 9; i++) {
+        for (int i = 0; i < 2000 && repo[0].getFitness() < -1*sequence.getFitness(); i++) {
             for (int j = 0; j < 10; j++) {
                 nextGen[j] = repo[j];
             }
@@ -49,12 +58,14 @@ public class StructureDrawer implements Runnable {
 
             repo = nextGen;
             Arrays.sort(repo);
-            drawer.requestRedraw(repo[0]);
+            final ProteinSequenceStructure best = repo[0];
+            Platform.runLater(() -> drawer.draw(canvas.getGraphicsContext2D(), best));
 
             //gc.clearRect(0,0,600,600);
 
             //drawStructure(repo[0]);
         }
+        run = false;
     }
 
     private ProteinSequenceStructure rws(ProteinSequenceStructure[] structs) {
