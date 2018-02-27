@@ -14,6 +14,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -35,9 +36,9 @@ public class FXCanvasApp extends Application {
 
     private Canvas canvas;
 
-    private Label fitnessValue;
-
     private int i = 0;
+
+    private Thread drawingThread = null;
 
     List<ProteinSequence> sequences;
 
@@ -56,25 +57,34 @@ public class FXCanvasApp extends Application {
         canvas.setTranslateY(50);
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
-        Label fitnessLabel = new Label("Fitness: ");
-        Button startButton = new Button("Next Sequence");
-        fitnessValue = new Label();
-        grid.add(fitnessLabel, 0, 1);
-        grid.add(fitnessValue, 1,1);
-        grid.add(startButton, 2, 0);
+        Button startButton = new Button("Click Me to begin program");
+        grid.add(startButton, 0, 0);
         root.getChildren().add(grid);
         root.getChildren().add(canvas);
         primaryStage.setScene(new Scene(root));
 
 
-        ProteinSequenceParser parser = new ProteinSequenceParser("C:\\Users\\nmoran\\Desktop\\junk\\input.txt");
+        ProteinSequenceParser parser = new ProteinSequenceParser("/Users/NicholasMoran/Downloads/input.txt");
         sequences = parser.getProteinSequences();
         startButton.setOnAction(event -> {
-            fitnessValue.setText(Integer.toString(sequences.get(i).getFitness()));
-            StructureDrawer drawer = new StructureDrawer(sequences.get(i++), canvas);
-            Thread t = new Thread(drawer);
-            t.setDaemon(true);
-            t.start();
+            if (i < sequences.size()) {
+                if (drawingThread != null) {
+                    drawingThread.stop();
+                }
+                startButton.setText("Click me for next sequence");
+                StructureDrawer drawer = new StructureDrawer(sequences.get(i++), canvas);
+                drawingThread = new Thread(drawer);
+                drawingThread.setDaemon(true);
+                drawingThread.start();
+            } else {
+                drawingThread.stop();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText("Staph dont touch me there. That is my nono square...");
+                alert.setContentText("Really tho, that is all of the sequences....no mo...");
+
+                alert.showAndWait();
+            }
         });
 
         //drawShapes(gc);

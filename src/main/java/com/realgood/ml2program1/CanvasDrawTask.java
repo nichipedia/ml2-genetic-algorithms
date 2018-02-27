@@ -27,12 +27,13 @@ public class CanvasDrawTask<T> extends AnimationTimer {
     public void handle(long now) {
         T dataToDraw = data.getAndSet(null);
         if (dataToDraw != null) {
-            draw(canvas.getGraphicsContext2D(), (ProteinSequenceStructure) dataToDraw);
+            //draw(canvas.getGraphicsContext2D(), (ProteinSequenceStructure) dataToDraw);
         }
     }
 
-     final void draw(GraphicsContext gc, ProteinSequenceStructure structure) {
+     final void draw(GraphicsContext gc, ProteinSequenceStructure structure, int generation) {
         gc.clearRect(0,0,600,600);
+        drawInfo(gc, structure, generation);
         gc.setFill(Color.GREEN);
         gc.setStroke(Color.BLUE);
         int length = structure.getStructureLength();
@@ -93,5 +94,15 @@ public class CanvasDrawTask<T> extends AnimationTimer {
             gc.setStroke(Color.BLUE);
             gc.setFill(Color.BLUE);
         }
+    }
+
+    private void drawInfo(GraphicsContext gc, ProteinSequenceStructure structure, int gen) {
+        gc.setStroke(Color.BLACK);
+        gc.strokeText(structure.toString(), 10,10);
+        gc.strokeText("Best Structure from Generation: " + gen, 10, 25);
+    }
+
+    public void drawFinished(GraphicsContext gc, ProteinSequenceStructure structure) {
+        draw(gc, structure, 0);
     }
 }

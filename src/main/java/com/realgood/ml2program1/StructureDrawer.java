@@ -42,9 +42,6 @@ public class StructureDrawer implements Runnable {
         Arrays.sort(repo);
 
         CanvasDrawTask<ProteinSequenceStructure> drawer = new CanvasDrawTask<>(canvas);
-        drawer.requestRedraw(repo[0]);
-        //drawStructure(repo[0]);
-
         for (int i = 0; i < 2000 && repo[0].getFitness() < -1*sequence.getFitness(); i++) {
             for (int j = 0; j < 10; j++) {
                 nextGen[j] = repo[j];
@@ -59,8 +56,9 @@ public class StructureDrawer implements Runnable {
             repo = nextGen;
             Arrays.sort(repo);
             final ProteinSequenceStructure best = repo[0];
-            Platform.runLater(() -> drawer.draw(canvas.getGraphicsContext2D(), best));
-
+            final int generation = i;
+            Platform.runLater(() -> drawer.draw(canvas.getGraphicsContext2D(), best, generation));
+            //drawer.requestRedraw(repo[0], i);
             //gc.clearRect(0,0,600,600);
 
             //drawStructure(repo[0]);
